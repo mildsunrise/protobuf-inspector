@@ -27,7 +27,7 @@ if "types" in config:
         assert(type not in parser.types) # FIXME: make parse_message work with non-tuples
         parser.types[type] = value
 if "native_types" in config:
-    for type, value in config["native_types"]:
+    for type, value in config["native_types"].items():
         parser.native_types[unicode(type)] = value
 
 # Make sure root type is defined and not compactable

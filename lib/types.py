@@ -21,9 +21,9 @@ class StandardParser(Parser):
 
         types_to_register = {
             0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64"],
-            1: ["64", "sfixed64", "fixed64", "double"],
+            1: ["64bit", "sfixed64", "fixed64", "double"],
             2: ["chunk", "bytes", "string", "message", "packed", "dump"],
-            5: ["32", "sfixed32", "fixed32", "float"],
+            5: ["32bit", "sfixed32", "fixed32", "float"],
         }
         for wire_type, types in types_to_register.items():
             for type in types:
@@ -39,8 +39,8 @@ class StandardParser(Parser):
             if not isinstance(field_entry, tuple): field_entry = (field_entry,)
             type = field_entry[0]
             field = field_entry[1]
-        except KeyError, e:
-            pass
+        except KeyError, e:  pass
+        except IndexError, e: pass
         return (type, field)
 
     def parse_message(self, file, gtype, endgroup=None):
@@ -126,17 +126,17 @@ class StandardParser(Parser):
         # Fall back to hexdump
         return self.parse_bytes(BytesIO(chunk), "bytes")
 
-    def parse_32(self, x, type):
+    def parse_32bit(self, x, type):
         signed = unpack("<i", x)[0]
         unsigned = unpack("<I", x)[0]
         floating = unpack("<f", x)[0]
         return "0x%08X / %d / %#g" % (unsigned, signed, floating)
 
-    def parse_64(self, x, type):
+    def parse_64bit(self, x, type):
         signed = unpack("<q", x)[0]
         unsigned = unpack("<Q", x)[0]
         floating = unpack("<d", x)[0]
-        return "0x%016X / %d / %#g" % (unsigned, signed, floating)
+        return "0x%016X / %d / %#.8g" % (unsigned, signed, floating)
 
 
     # Functions for protobuf types
@@ -179,7 +179,7 @@ class StandardParser(Parser):
     def parse_packed(self, file, gtype):
         assert(gtype.startswith("packed "))
         type = gtype[7:]
-        wire_type, handler = self.match_native_type(type)
+        handler, wire_type = self.match_native_type(type)
 
         lines = []
         while True:
@@ -187,7 +187,7 @@ class StandardParser(Parser):
             if x is None: break
             lines.append(self.safe_call(handler, x, type))
 
-        if len(lines) <= self.packed_compact_max_items and self.to_display_compactly(gtypes, lines):
+        if len(lines) <= self.packed_compact_max_lines and self.to_display_compactly(gtype, lines):
             return u"[%s]" % (", ".join(lines))
         return u"packed:\n%s" % (self.indent(u"\n".join(lines)))
 
@@ -207,7 +207,7 @@ class StandardParser(Parser):
         return fg3("%d" % unpack("<Q", x)[0])
 
     def parse_double(self, x, type):
-        return fg3("%#g" % unpack("<d", x)[0])
+        return fg3("%#.8g" % unpack("<d", x)[0])
 
 
     # Other convenience types

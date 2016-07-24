@@ -21,11 +21,11 @@ class Parser(object):
         self.default_handler = "message"
         self.default_handlers = {
             0: "varint",
-            1: "64",
+            1: "64bit",
             2: "chunk",
             3: "startgroup",
             4: "endgroup",
-            5: "32",
+            5: "32bit",
         }
 
     # Formatting
@@ -57,9 +57,9 @@ class Parser(object):
             padded_chunk = chunk + [None] * max(0, self.bytes_per_line - len(chunk))
             hexdump = u" ".join("  " if x is None else decorate(i, u"%02X" % x) for i, x in enumerate(padded_chunk))
             printable_chunk = u"".join(decorate(i, chr(x) if 0x20 <= x < 0x7F else fg3(u".")) for i, x in enumerate(chunk))
-            lines.append(u"%04x   %s  %s\n" % (offset, hexdump, printable_chunk))
+            lines.append(u"%04x   %s  %s" % (offset, hexdump, printable_chunk))
             offset += len(chunk)
-        return (u"".join(lines), offset)
+        return (u"\n".join(lines), offset)
 
     # Error handling
 
@@ -75,8 +75,8 @@ class Parser(object):
             return handler(x, *wargs)
         except Exception, e:
             self.errors_produced.append(e)
-            hex_dump = u"" if chunk is False else self.hex_dump(BytesIO(chunk), x.tell())[0] + u"\n\n"
-            return u"%s:\n\n%s%s" % (fg1(u"ERROR"), self.indent(format_exc(e)), self.indent(hex_dump))
+            hex_dump = u"" if chunk is False else u"\n\n%s\n" % self.hex_dump(BytesIO(chunk), x.tell())[0]
+            return u"%s: %s%s" % (fg1(u"ERROR"), self.indent(format_exc(e)).strip(), self.indent(hex_dump))
 
     # Select suitable native type to use
 
@@ -89,7 +89,7 @@ class Parser(object):
     def match_handler(self, type, wire_type=None):
         native_type = self.match_native_type(type)
         if not (wire_type is None) and wire_type != native_type[1]:
-            raise Exception("Wanted type %s (%d) but found wire type %d:\n" % (type, native_type[1], wire_type))
+            raise Exception("Found wire type %d (%s), wanted type %d (%s)" % (wire_type, self.default_handlers[wire_type], native_type[1], type))
         return native_type[0]
 
 
