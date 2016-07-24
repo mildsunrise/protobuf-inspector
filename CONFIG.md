@@ -24,7 +24,7 @@ Let's say we start working with this blob:
             0000   00 01 03 04 07                                                           .....
         8 <chunk> = empty chunk
         9 <varint> = 250
-        10 <32-bit> = 0x43480000 / 1128792064 / 200.000
+        10 <32bit> = 0x43480000 / 1128792064 / 200.000
         14 <chunk> = message:
             1 <chunk> = "POKECOIN"
         14 <chunk> = message:
@@ -91,7 +91,7 @@ Wire type | Type | Description
 0 | `sint32`, `sint64` | Zig-zag encoded varints.
 0 | `bool` | Boolean.
 0 | `enum <name>` | Enum type `<name>` (see later).
-1 | `64` | Generic 64-bit (8 byte) chunk.
+1 | `64bit` | Generic 64-bit (8 byte) value.
 1 | `sfixed64`, `fixed64` | 64-bit integer, signed / unsigned.
 1 | `double` | Double precision IEEE float
 2 | `chunk` | Length-delimited blob, try to guess contents.
@@ -101,7 +101,7 @@ Wire type | Type | Description
 2 | `dump` | *(convenience)* Dump the blob raw data to file.
 2 | `message` | Blob contains a message of unknown type.
 3; 4 | `group` | Starting / ending group.
-5 | `32` | Generic 32-bit (4 byte) chunk.
+5 | `32bit` | Generic 32-bit (4 byte) value.
 5 | `sfixed32`, `fixed32` | 32-bit integer, signed / unsigned.
 5 | `float` | Single precision IEEE float
 
@@ -221,10 +221,9 @@ types = {
   },
 }
 
-import time
-
 def parse_milliseconds_timestamp(x, type):
-  return time.ctime(x / 1000.0)
+  from time import ctime
+  return ctime(x / 1000.0)
 
 native_types = {
   "milliseconds_timestamp": (parse_milliseconds_timestamp, 0),
@@ -252,10 +251,9 @@ types = {
   },
 }
 
-import time
-
 def parse_milliseconds_timestamp(x, type):
-  return time.ctime(x / 1000.0)
+  from time import ctime
+  return ctime(x / 1000.0)
 
 native_types = {
   "milliseconds_timestamp": (parse_milliseconds_timestamp, 0),
@@ -264,4 +262,13 @@ native_types = {
 
 This gets us:
 
-TODO
+    $ ./main.py < my-blob
+    root:
+        1 timestamp = Wed Jul 20 22:24:03 2016
+        2 username = "kotlin46"
+        7 <packed varint> = [0, 1, 3, 4, 7]
+        8 <chunk> = empty chunk
+        9 <varint> = 250
+        10 <float> = 200.000
+        14 available_items = item(1 name = "POKECOIN")
+        14 available_items = item(1 name = "STARDUST", 2 price = 100)

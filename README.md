@@ -10,7 +10,7 @@ As you can see, the field names are obviously lost, together with
 some high-level details such as:
 
  - whether a varint uses [zig-zag encoding][] or not (will assume no zig-zag by default)
- - whether a 32-bit/64-bit chunk is an integer or float (both shown by default)
+ - whether a 32-bit/64-bit value is an integer or float (both shown by default)
  - signedness (auto-detect by default)
 
 But protobuf-parser is able to correctly guess the message structure
