@@ -4,7 +4,7 @@ Simple program that can parse [Google Protobuf][] encoded blobs
 without knowing their accompanying definition. It will print a
 nice, colored representation of their contents. Example:
 
-TODO
+![Main screenshot](https://i.imgur.com/Vw403MI.png)
 
 As you can see, the field names are obviously lost, together with
 some high-level details such as:
@@ -45,12 +45,12 @@ parsing was stopped in that chunk, if applicable.
 
 So, if you specified a `int32` and a larger varint is found, you'd get something like:
 
-FIXME: screenshot
+![Error on invalid varint](https://i.imgur.com/DWG9MGX.png)
 
 If you specified that some field contained an embedded message, but invalid data was
 found there, you'd get:
 
-FIXME: screenshot
+![Error on invalid message](https://i.imgur.com/URaWqXz.png)
 
 Please note that `main.py` will exit with non-zero status if one or more parsing
 errors occurred.
