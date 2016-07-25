@@ -20,7 +20,7 @@ class StandardParser(Parser):
         self.dump_index = 0
 
         types_to_register = {
-            0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64"],
+            0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64", "enum"],
             1: ["64bit", "sfixed64", "fixed64", "double"],
             2: ["chunk", "bytes", "string", "message", "packed", "dump"],
             5: ["32bit", "sfixed32", "fixed32", "float"],
@@ -39,7 +39,7 @@ class StandardParser(Parser):
             if not isinstance(field_entry, tuple): field_entry = (field_entry,)
             type = field_entry[0]
             field = field_entry[1]
-        except KeyError, e:  pass
+        except KeyError, e: pass
         except IndexError, e: pass
         return (type, field)
 
@@ -208,6 +208,14 @@ class StandardParser(Parser):
 
     def parse_double(self, x, type):
         return fg3("%#.8g" % unpack("<d", x)[0])
+
+    def parse_enum(self, x, type):
+        if type not in self.types:
+            raise Exception("Enum type '%s' not defined" % type)
+        type_entry = self.types[type]
+        if x not in type_entry:
+            raise Exception("Unknown value %d for '%s'" % (x, type))
+        return fg6(type_entry[x])
 
 
     # Other convenience types
