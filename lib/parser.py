@@ -30,12 +30,12 @@ class Parser(object):
 
     # Formatting
 
-    def indent(self, text, indent=None): # FIXME: change refs to self.
+    def indent(self, text, indent=None):
         if indent is None: indent = self.default_indent
         lines = ((indent + line if len(line) else line) for line in text.split(u"\n"))
         return u"\n".join(lines)
 
-    def to_display_compactly(self, type, lines): # FIXME: change refs
+    def to_display_compactly(self, type, lines):
         try:
             return self.types[type]["compact"]
         except KeyError, e:
@@ -63,7 +63,7 @@ class Parser(object):
 
     # Error handling
 
-    def safe_call(self, handler, x, *wargs): # FIXME: change refs
+    def safe_call(self, handler, x, *wargs):
         chunk = False
         try:
             chunk = x.read()

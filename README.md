@@ -83,6 +83,3 @@ There are some tricks you can use to save time when approaching a blob:
 [Google Protobuf]: https://developers.google.com/protocol-buffers
 [Wire format]: https://developers.google.com/protocol-buffers/docs/encoding
 [Zig-zag encoding]: https://developers.google.com/protocol-buffers/docs/encoding#signed-integers
-
-TODO: convert strings in protobuf_config to Unicode, handle values set to non-tuples
-TODO: register_handler(<handler>, <type>...)

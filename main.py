@@ -24,7 +24,7 @@ parser = StandardParser()
 if "types" in config:
     for type, value in config["types"].items():
         type = unicode(type)
-        assert(type not in parser.types) # FIXME: make parse_message work with non-tuples
+        assert(type not in parser.types)
         parser.types[type] = value
 if "native_types" in config:
     for type, value in config["native_types"].items():
