@@ -1,4 +1,4 @@
-# protobuf-parser
+# protobuf-inspector
 
 Simple program that can parse [Google Protobuf][] encoded blobs
 without knowing their accompanying definition. It will print a
@@ -13,7 +13,7 @@ some high-level details such as:
  - whether a 32-bit/64-bit value is an integer or float (both shown by default)
  - signedness (auto-detect by default)
 
-But protobuf-parser is able to correctly guess the message structure
+But protobuf-inspector is able to correctly guess the message structure
 most of the time. When it finds embedded binary data on a field, it'll
 first try to parse it as a message. If that fails, it'll display the data
 as a string or hexdump. It can make mistakes, especially with small chunks.
@@ -30,7 +30,7 @@ on stdin:
     ./main.py < my-protobuf-blob
 
 After reading the first (blind) analysis of the blob, you typically start defining
-some of the fields so protobuf-parser can better parse your blobs, until you get
+some of the fields so protobuf-inspector can better parse your blobs, until you get
 to a point where you have a full protobuf definition and the parser no longer has
 to guess anything.
 
@@ -69,12 +69,12 @@ There are some tricks you can use to save time when approaching a blob:
     as an embedded message and it should, force it to `message` to see the reason.
 
  3. If you want to extract a chunk's raw data to a file to analyze it better, specify a
-    type of `dump` and protobuf-parser will create `dump.0`, `dump.1`,
+    type of `dump` and protobuf-inspector will create `dump.0`, `dump.1`,
     etc. every time it finds a matching blob.
 
- 4. protobuf-parser parses the blob as a message of type `root`, but that's just a
+ 4. protobuf-inspector parses the blob as a message of type `root`, but that's just a
     default. If you have lots of message types defined, you can pass a type name as
-    optional argument, and protobuf-parser will use that instead of `root`:
+    optional argument, and protobuf-inspector will use that instead of `root`:
     
         ./main.py request < my-protobuf-blob
 

@@ -3,7 +3,7 @@
 ## Basic field info
 
 If you're positive about the type of some fields in your message, you can tell
-that to protobuf-parser to help it parse your message better. To do this, create
+that to protobuf-inspector to help it parse your message better. To do this, create
 a `protobuf_config.py` file in the current directory or any parent one, with the
 following in it:
 
@@ -126,7 +126,7 @@ types = {
 }
 ~~~
 
-Because `item` isn't any of the native types, protobuf-parser will assume it's
+Because `item` isn't any of the native types, protobuf-inspector will assume it's
 a new message type. Now let's label the fields of each item: field 1 is the name,
 field 2 seems the price.
 
