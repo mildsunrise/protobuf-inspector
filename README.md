@@ -43,7 +43,7 @@ will go on unaffected at the outside of the hierarchy. The stack trace will
 be printed where the field contents would go, along with a hexdump indicating where
 parsing was stopped in that chunk, if applicable.
 
-So, if you specified a `int32` and a larger varint is found, you'd get something like:
+So, if you specified a `uint32` and a larger varint is found, you'd get something like:
 
 ![Error on invalid varint](https://i.imgur.com/DWG9MGX.png)
 
