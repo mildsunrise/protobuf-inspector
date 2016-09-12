@@ -1,8 +1,8 @@
 # protobuf-inspector
 
 Simple program that can parse [Google Protobuf][] encoded blobs
-without knowing their accompanying definition. It will print a
-nice, colored representation of their contents. Example:
+(version 2 or 3) without knowing their accompanying definition.
+It will print a nice, colored representation of their contents. Example:
 
 ![Main screenshot](https://i.imgur.com/Vw403MI.png)
 
@@ -39,7 +39,7 @@ to guess anything.
 ## Parsing errors
 
 If a parsing error is found, parsing will stop *within that field*, but
-will go un unaffected at the outside of the hierarchy. The stack trace will
+will go on unaffected at the outside of the hierarchy. The stack trace will
 be printed where the field contents would go, along with a hexdump indicating where
 parsing was stopped in that chunk, if applicable.
 
