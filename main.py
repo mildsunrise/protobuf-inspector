@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from sys import stdin, argv
 from os.path import ismount, exists, join
