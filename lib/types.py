@@ -19,6 +19,8 @@ class StandardParser(Parser):
         self.dump_prefix = "dump."
         self.dump_index = 0
 
+        self.wire_types_not_matching = False
+
         types_to_register = {
             0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64", "enum"],
             1: ["64bit", "sfixed64", "fixed64", "double"],
@@ -48,6 +50,7 @@ class StandardParser(Parser):
             raise Exception("Unknown message type %s" % gtype)
 
         lines = []
+        keys_types = {}
         while True:
             key, wire_type = read_identifier(file)
             if key is None: break
@@ -56,6 +59,10 @@ class StandardParser(Parser):
             assert(not (x is None))
 
             if wire_type is 4: break
+
+            if key in keys_types and keys_types[key] != wire_type:
+                parser.wire_types_not_matching = True
+            keys_types[key] = wire_type
 
             type, field = self.get_message_field_entry(gtype, key)
             if type is None: type = self.default_handlers[wire_type]
