@@ -18,6 +18,11 @@ def read_varint(file):
       assert(b != 0 or pos == 7)
       return result
 
+def read_identifier(file):
+  id = read_varint(file)
+  if id is None: return (None, None)
+  return (id >> 3, id & 0x07)
+
 def read_value(file, wire_type):
   if wire_type == 0:
     return read_varint(file)

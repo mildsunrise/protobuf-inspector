@@ -1,4 +1,4 @@
-from core import read_varint, read_value
+from core import read_varint, read_identifier, read_value
 from parser import Parser, fg0, fg1, fg2, fg3, fg4, fg5, fg6, fg7, fg8, fg9, dim, bold
 from struct import unpack
 from io import BytesIO
@@ -49,11 +49,9 @@ class StandardParser(Parser):
 
         lines = []
         while True:
-            key = read_varint(file)
+            key, wire_type = read_identifier(file)
             if key is None: break
 
-            wire_type = key & 0x07
-            key = key >> 3
             x = read_value(file, wire_type)
             assert(not (x is None))
 
