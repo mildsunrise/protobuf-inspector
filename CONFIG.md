@@ -100,7 +100,7 @@ Wire type | Type | Description
 2 | `packed <T>` | Blob with packed repeated field `<T>`.
 2 | `dump` | *(convenience)* Dump the blob raw data to file.
 2 | `message` | Blob contains a message of unknown type.
-3; 4 | - | Starting / ending group. These are deprecated, and handled transparently by the parser.
+3; 4 | - | Group start / end. These are deprecated, and handled transparently by the parser. These wire types are never searched for handlers.
 5 | `32bit` | Generic 32-bit (4 byte) value.
 5 | `sfixed32`, `fixed32` | 32-bit integer, signed / unsigned.
 5 | `float` | Single precision IEEE float

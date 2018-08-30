@@ -20,6 +20,7 @@ class StandardParser(Parser):
         self.dump_index = 0
 
         self.wire_types_not_matching = False
+        self.groups_observed = False
 
         types_to_register = {
             0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64", "enum"],
@@ -58,23 +59,30 @@ class StandardParser(Parser):
             x = read_value(file, wire_type)
             assert(not (x is None))
 
-            if wire_type is 4: break
+            if wire_type is 4:
+                if not endgroup: raise Exception("Unexpected end group")
+                endgroup[0] = key
+                break
 
             if key in keys_types and keys_types[key] != wire_type:
                 parser.wire_types_not_matching = True
             keys_types[key] = wire_type
 
             type, field = self.get_message_field_entry(gtype, key)
-            if type is None: type = self.default_handlers[wire_type]
             if wire_type is 3:
-                x = self.parse_message(file, type, key)
+                if type is None: type = "message"
+                end = [None]
+                x = self.parse_message(file, type, end)
+                x = "group (end %s) " % fg4(str(end[0])) + x
+                self.groups_observed = True
             else:
+                if type is None: type = self.default_handlers[wire_type]
                 x = self.safe_call(lambda x: self.match_handler(type, wire_type)(x, type), x)
 
             if field is None: field = u"<%s>" % type
             lines.append(u"%s %s = %s" % (fg4(str(key)), field, x))
 
-        assert(endgroup == key)
+        if key is None and endgroup: raise Exception("Group was not ended")
         if len(lines) <= self.message_compact_max_lines and self.to_display_compactly(gtype, lines):
             return u"%s(%s)" % (gtype, u", ".join(lines))
         if not len(lines): lines = [u"empty"]
