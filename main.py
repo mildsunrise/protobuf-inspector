@@ -1,9 +1,10 @@
 #!/usr/bin/env python2
 
-from sys import stdin, argv
+from sys import stdin, stderr, argv
 from os.path import ismount, exists, join
 from runpy import run_path
 from lib.types import StandardParser
+import lib.types
 
 # Parse arguments
 root_type = "root"
@@ -36,4 +37,13 @@ parser.types[root_type]["compact"] = False
 
 # PARSE!
 print parser.safe_call(parser.match_handler("message"), stdin, root_type) + "\n"
+
+# print veredict
+if parser.errors_produced:
+    stderr.write(lib.types.fg1("* %d errors seen.\n" % len(parser.errors_produced)))
+if parser.wire_types_not_matching:
+    stderr.write(lib.types.fg3("* Warning: different wire types were associated with the same key.\n  This should never happen in a Protobuf blob.\n"))
+if parser.groups_observed and not parser.errors_produced:
+    stderr.write(lib.types.fg4("* This blob uses groups.\n  Groups are deprecated and only used in old Protobuf 2 apps, in whose case you should not see packed values. Support for groups hasn't been as tested and you may run into trouble.\n"))
+
 exit(1 if len(parser.errors_produced) else 0)

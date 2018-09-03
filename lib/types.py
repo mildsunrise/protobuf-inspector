@@ -116,6 +116,8 @@ class StandardParser(Parser):
         chunk = file.read()
         if len(chunk) is 0: return "empty chunk"
 
+        # TODO: improve detection code, or at least don't fake call parse_message because this mangles the stats and uwu
+
         # Attempt to decode message
         try:
             return self.parse_message(BytesIO(chunk), "message")
