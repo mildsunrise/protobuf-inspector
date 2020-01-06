@@ -65,7 +65,7 @@ class StandardParser(Parser):
                 break
 
             if key in keys_types and keys_types[key] != wire_type:
-                parser.wire_types_not_matching = True
+                self.wire_types_not_matching = True
             keys_types[key] = wire_type
 
             type, field = self.get_message_field_entry(gtype, key)
