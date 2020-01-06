@@ -1,6 +1,6 @@
 from traceback import format_exc
-from core import read_varint, read_value
 from io import BytesIO
+from .core import read_varint, read_value
 
 # Implements the Parser class, which has the basic infrastructure for
 # storing types, calling them to parse, basic formatting and error handling.
@@ -32,17 +32,17 @@ class Parser(object):
 
     def indent(self, text, indent=None):
         if indent is None: indent = self.default_indent
-        lines = ((indent + line if len(line) else line) for line in text.split(u"\n"))
-        return u"\n".join(lines)
+        lines = ((indent + line if len(line) else line) for line in text.split("\n"))
+        return "\n".join(lines)
 
     def to_display_compactly(self, type, lines):
         try:
             return self.types[type]["compact"]
-        except KeyError, e:
+        except KeyError:
             pass
 
         for line in lines:
-            if u"\n" in line or len(line) > self.compact_max_line_length: return False
+            if "\n" in line or len(line) > self.compact_max_line_length: return False
         if sum(len(line) for line in lines) > self.compact_max_length: return False
         return True
 
@@ -52,14 +52,14 @@ class Parser(object):
         decorate = lambda i, x: \
             x if (mark is None or offset + i < mark) else dim(x)
         while True:
-            chunk = [ord(x) for x in file.read(self.bytes_per_line)]
+            chunk = list(file.read(self.bytes_per_line))
             if not len(chunk): break
             padded_chunk = chunk + [None] * max(0, self.bytes_per_line - len(chunk))
-            hexdump = u" ".join("  " if x is None else decorate(i, u"%02X" % x) for i, x in enumerate(padded_chunk))
-            printable_chunk = u"".join(decorate(i, chr(x) if 0x20 <= x < 0x7F else fg3(u".")) for i, x in enumerate(chunk))
-            lines.append(u"%04x   %s  %s" % (offset, hexdump, printable_chunk))
+            hexdump = " ".join("  " if x is None else decorate(i, "%02X" % x) for i, x in enumerate(padded_chunk))
+            printable_chunk = "".join(decorate(i, chr(x) if 0x20 <= x < 0x7F else fg3(".")) for i, x in enumerate(chunk))
+            lines.append("%04x   %s  %s" % (offset, hexdump, printable_chunk))
             offset += len(chunk)
-        return (u"\n".join(lines), offset)
+        return ("\n".join(lines), offset)
 
     # Error handling
 
@@ -68,20 +68,20 @@ class Parser(object):
         try:
             chunk = x.read()
             x = BytesIO(chunk)
-        except Exception, e:
+        except Exception:
             pass
 
         try:
             return handler(x, *wargs)
-        except Exception, e:
+        except Exception as e:
             self.errors_produced.append(e)
-            hex_dump = u"" if chunk is False else u"\n\n%s\n" % self.hex_dump(BytesIO(chunk), x.tell())[0]
-            return u"%s: %s%s" % (fg1(u"ERROR"), self.indent(format_exc(e)).strip(), self.indent(hex_dump))
+            hex_dump = "" if chunk is False else "\n\n%s\n" % self.hex_dump(BytesIO(chunk), x.tell())[0]
+            return "%s: %s%s" % (fg1("ERROR"), self.indent(format_exc()).strip(), self.indent(hex_dump))
 
     # Select suitable native type to use
 
     def match_native_type(self, type):
-        type_primary = type.split(u" ")[0]
+        type_primary = type.split(" ")[0]
         if type_primary in self.native_types:
             return self.native_types[type_primary]
         return self.native_types[self.default_handler]
@@ -109,4 +109,4 @@ def dim(x):
 def genfg(n):
     globals()["fg%d" % n] = lambda x: fg(x, n)
     globals()["FG%d" % n] = lambda x: bold(fg(x, n))
-for i in xrange(10): genfg(i)
+for i in range(10): genfg(i)

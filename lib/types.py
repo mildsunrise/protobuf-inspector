@@ -1,5 +1,5 @@
-from core import read_varint, read_identifier, read_value
-from parser import Parser, fg0, fg1, fg2, fg3, fg4, fg5, fg6, fg7, fg8, fg9, dim, bold
+from .core import read_varint, read_identifier, read_value
+from .parser import Parser, fg0, fg1, fg2, fg3, fg4, fg5, fg6, fg7, fg8, fg9, dim, bold
 from struct import unpack
 from io import BytesIO
 
@@ -42,8 +42,8 @@ class StandardParser(Parser):
             if not isinstance(field_entry, tuple): field_entry = (field_entry,)
             type = field_entry[0]
             field = field_entry[1]
-        except KeyError, e: pass
-        except IndexError, e: pass
+        except KeyError: pass
+        except IndexError: pass
         return (type, field)
 
     def parse_message(self, file, gtype, endgroup=None):
@@ -59,7 +59,7 @@ class StandardParser(Parser):
             x = read_value(file, wire_type)
             assert(not (x is None))
 
-            if wire_type is 4:
+            if wire_type == 4:
                 if not endgroup: raise Exception("Unexpected end group")
                 endgroup[0] = key
                 break
@@ -69,7 +69,7 @@ class StandardParser(Parser):
             keys_types[key] = wire_type
 
             type, field = self.get_message_field_entry(gtype, key)
-            if wire_type is 3:
+            if wire_type == 3:
                 if type is None: type = "message"
                 end = [None]
                 x = self.parse_message(file, type, end)
@@ -79,14 +79,14 @@ class StandardParser(Parser):
                 if type is None: type = self.default_handlers[wire_type]
                 x = self.safe_call(lambda x: self.match_handler(type, wire_type)(x, type), x)
 
-            if field is None: field = u"<%s>" % type
-            lines.append(u"%s %s = %s" % (fg4(str(key)), field, x))
+            if field is None: field = "<%s>" % type
+            lines.append("%s %s = %s" % (fg4(str(key)), field, x))
 
         if key is None and endgroup: raise Exception("Group was not ended")
         if len(lines) <= self.message_compact_max_lines and self.to_display_compactly(gtype, lines):
-            return u"%s(%s)" % (gtype, u", ".join(lines))
-        if not len(lines): lines = [u"empty"]
-        return u"%s:\n%s" % (gtype, self.indent(u"\n".join(lines)))
+            return "%s(%s)" % (gtype, ", ".join(lines))
+        if not len(lines): lines = ["empty"]
+        return "%s:\n%s" % (gtype, self.indent("\n".join(lines)))
 
 
     # Functions for generic types (default for wire types)
@@ -97,7 +97,7 @@ class StandardParser(Parser):
             # Would be small and negative if interpreted as int32 / int64
             result.insert(0, x - (1 << 64))
 
-        s = fg3(u"%d" % result[0])
+        s = fg3("%d" % result[0])
         if len(result) >= 2: s += " (%d)" % result[1]
         return s
 
@@ -106,7 +106,7 @@ class StandardParser(Parser):
         for c in string:
             c = ord(c)
             if c < 0x20 or c == 0x7F: controlchars += 1
-            if (ord(u"A") <= c <= ord(u"Z")) or (ord(u"a") <= c <= ord(u"z")) or (ord(u"0") <= c <= ord(u"9")): alnum += 1
+            if (ord("A") <= c <= ord("Z")) or (ord("a") <= c <= ord("z")) or (ord("0") <= c <= ord("9")): alnum += 1
 
         if controlchars / float(total) > 0.1: return False
         if alnum / float(total) < 0.5: return False
@@ -114,26 +114,26 @@ class StandardParser(Parser):
 
     def parse_chunk(self, file, type):
         chunk = file.read()
-        if len(chunk) is 0: return "empty chunk"
+        if not chunk: return "empty chunk"
 
         # Attempt to decode message
         try:
             return self.parse_message(BytesIO(chunk), "message")
-        except Exception, e:
+        except Exception:
             pass
 
         # Attempt to decode packed repeated chunks
         try:
             if len(chunk) >= 5:
                 return self.parse_packed(BytesIO(chunk), "packed chunk")
-        except Exception, e:
+        except Exception:
             pass
 
         # Attempt to decode as UTF-8
         try:
             if self.is_probable_string(chunk.decode("utf-8")):
                 return self.parse_string(BytesIO(chunk), "string")
-        except UnicodeError, e:
+        except UnicodeError:
             pass
 
         # Fall back to hexdump
@@ -183,11 +183,11 @@ class StandardParser(Parser):
 
     def parse_string(self, file, type):
         string = file.read().decode("utf-8")
-        return fg2('"%s"' % (repr(string)[2:-1]))
+        return fg2('"%s"' % (repr(string)[1:-1]))
 
     def parse_bytes(self, file, type):
         hex_dump, offset = self.hex_dump(file)
-        return u"%s (%d)\n%s" % (type, offset, self.indent(hex_dump))
+        return "%s (%d)\n%s" % (type, offset, self.indent(hex_dump))
 
     def parse_packed(self, file, gtype):
         assert(gtype.startswith("packed "))
@@ -201,8 +201,8 @@ class StandardParser(Parser):
             lines.append(self.safe_call(handler, x, type))
 
         if len(lines) <= self.packed_compact_max_lines and self.to_display_compactly(gtype, lines):
-            return u"[%s]" % (", ".join(lines))
-        return u"packed:\n%s" % (self.indent(u"\n".join(lines)))
+            return "[%s]" % (", ".join(lines))
+        return "packed:\n%s" % (self.indent("\n".join(lines)))
 
     def parse_fixed32(self, x, type):
         return fg3("%d" % unpack("<i", x)[0])

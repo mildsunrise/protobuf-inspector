@@ -10,7 +10,7 @@ def read_varint(file):
     if not len(b):
       assert(not pos)
       return None
-    b = ord(b)
+    b = b[0]
 
     result |= ((b & 0x7F) << pos)
     pos += 7
