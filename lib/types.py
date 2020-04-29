@@ -182,7 +182,7 @@ class StandardParser(Parser):
         return fg3(str(x))
 
     def parse_bool(self, x, type):
-        assert(0 <= x < (1 << 2))
+        assert(0 <= x < (1 << 1))
         return fg3(str(bool(x)))
 
     def parse_string(self, file, type):
