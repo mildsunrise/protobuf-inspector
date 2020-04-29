@@ -23,7 +23,7 @@ class StandardParser(Parser):
         self.groups_observed = False
 
         types_to_register = {
-            0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64", "enum"],
+            0: ["varint", "sint32", "sint64", "int32", "int64", "uint32", "uint64", "enum", "bool"],
             1: ["64bit", "sfixed64", "fixed64", "double"],
             2: ["chunk", "bytes", "string", "message", "packed", "dump"],
             5: ["32bit", "sfixed32", "fixed32", "float"],
@@ -180,6 +180,10 @@ class StandardParser(Parser):
     def parse_uint64(self, x, type):
         assert(0 <= x < (1 << 64))
         return fg3(str(x))
+
+    def parse_bool(self, x, type):
+        assert(0 <= x < (1 << 2))
+        return fg3(str(bool(x)))
 
     def parse_string(self, file, type):
         string = file.read().decode("utf-8")
