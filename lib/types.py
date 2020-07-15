@@ -240,9 +240,8 @@ class StandardParser(Parser):
     def parse_dump(self, file, type):
         chunk = file.read()
         filename = self.dump_prefix + str(self.dump_index)
-        file = open(filename, "w")
-        file.write(chunk)
-        file.close()
+        with open(filename, "wb") as f:
+            f.write(chunk)
         self.dump_index += 1
         return "%d bytes written to %s" % (len(chunk), filename)
 
