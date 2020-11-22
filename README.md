@@ -80,7 +80,7 @@ There are some tricks you can use to save time when approaching a blob:
     default. If you have lots of message types defined, you can pass a type name as
     optional argument, and protobuf-inspector will use that instead of `root`:
     
-        ./main.py request < my-protobuf-blob
+        protobuf_inspector request < my-protobuf-blob
 
 ## Programmatic access
 

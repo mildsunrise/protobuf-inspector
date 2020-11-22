@@ -16,7 +16,7 @@ types = {
 
 Let's say we start working with this blob:
 
-    $ ./main.py < my-blob
+    $ protobuf_inspector < my-blob
     root:
         1 <varint> = 1469046243471
         2 <chunk> = "kotlin46"
@@ -67,7 +67,7 @@ types = {
 
 After this, we get:
 
-    $ ./main.py < my-blob
+    $ protobuf_inspector < my-blob
     root:
         1 timestamp = 1469046243471
         2 username = "kotlin46"
@@ -148,7 +148,7 @@ types = {
 
 Parsing now gets us a lovely:
 
-    $ ./main.py < my-blob
+    $ protobuf_inspector < my-blob
     root:
         1 timestamp = 1469046243471
         2 username = "kotlin46"
@@ -192,7 +192,7 @@ or a special version of `float` that presents the number in percentage form.
 
 For an example, let's continue with our blob:
 
-    $ ./main.py < my-blob
+    $ protobuf_inspector < my-blob
     root:
         1 timestamp = 1469046243471
         2 username = "kotlin46"
@@ -262,7 +262,7 @@ native_types = {
 
 This gets us:
 
-    $ ./main.py < my-blob
+    $ protobuf_inspector < my-blob
     root:
         1 timestamp = Wed Jul 20 22:24:03 2016
         2 username = "kotlin46"
