@@ -24,10 +24,14 @@ the [wire format][] or parser developers, in addition to reverse-engineering.
 
 ## Usage
 
-No dependencies required. Just run `main.py` and feed the protobuf blob
+You can install with pip:
+
+    pip install protobuf-inspector
+
+This installs the `protobuf_inspector` command. Run it, feeding the protobuf blob
 on stdin:
 
-    ./main.py < my-protobuf-blob
+    protobuf_inspector < my-protobuf-blob
 
 After reading the first (blind) analysis of the blob, you typically start defining
 some of the fields so protobuf-inspector can better parse your blobs, until you get
@@ -77,6 +81,23 @@ There are some tricks you can use to save time when approaching a blob:
     optional argument, and protobuf-inspector will use that instead of `root`:
     
         ./main.py request < my-protobuf-blob
+
+## Programmatic access
+
+Simple example:
+
+~~~ python
+from protobuf_inspector.types import StandardParser
+
+parser = StandardParser()
+with open('my-blob', 'rb') as fh:
+   output = parser.parse_message(fh, "message")
+print(output)
+~~~
+
+This project was not initially designed for use as a library, though,
+and its API might change. For a more complex example,
+see `protobuf_inspector/__main__.py`.
 
 
 
